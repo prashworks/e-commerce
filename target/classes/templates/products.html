@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Products</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#">E-Commerce</a>
+  <div class="collapse navbar-collapse">
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item" th:if="${#authentication.principal != null}">
+        <span class="navbar-text">Welcome, <span th:text="${#authentication.name}"></span></span>
+      </li>
+      <li class="nav-item" th:if="${#authorization.expression('hasRole(''USER'')')}">
+        <a class="nav-link" th:href="@{/cart}">View Cart</a>
+      </li>
+      <li class="nav-item" th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
+        <a class="nav-link" th:href="@{/products/new}">Add New Product</a>
+      </li>
+      <li class="nav-item" th:if="${#authentication.principal != null}">
+        <form th:action="@{/logout}" method="post" class="form-inline">
+          <button type="submit" class="btn btn-link nav-link">Logout</button>
+        </form>
+      </li>
+      <li class="nav-item" th:if="${#authentication.principal == null}">
+        <a class="nav-link" th:href="@{/login}">Login</a>
+      </li>
+      <li class="nav-item" th:if="${#authentication.principal == null}">
+        <a class="nav-link" th:href="@{/register}">Register</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container">
+  <h2 class="my-4">All Products</h2>
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Description</th>
+      <th>Price</th>
+      <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="product : ${products}">
+      <td th:text="${product.id}"></td>
+      <td th:text="${product.name}"></td>
+      <td th:text="${product.description}"></td>
+      <td th:text="${product.price}"></td>
+      <td>
+        <form th:if="${#authorization.expression('hasRole(''USER'')')}"
+              th:action="@{'/cart/add/' + ${product.id}}"
+              method="post"
+              style="display:inline;">
+          <button type="submit" class="btn btn-primary btn-sm">Add to Cart</button>
+        </form>
+        <span th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
+                    </span>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+</body>
+</html>
